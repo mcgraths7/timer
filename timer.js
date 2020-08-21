@@ -1,41 +1,57 @@
 class Timer {
-  constructor(startTime) {
-    this.startTime = startTime;
-    this.currentTime = startTime;
-    this.intervalId = undefined;
-    this.start = this.start.bind(this);
-    this.pause = this.pause.bind(this);
+  constructor(durationInput, startButton, pauseButton, callbacks) {
+    // DOM element references bound to timer
+    this.startButton = startButton;
+    this.pauseButton = pauseButton;
+    this.durationInput = durationInput;
+
+    if (callbacks) {
+      this.onStart = callbacks.onStart;
+      this.onTick = callbacks.onTick;
+      this.onComplete = callbacks.onComplete;
+      this.onDurationChange = callbacks.onDurationChange;
+    }
+
+    // Add event listeners to bound DOM elements
+    this.startButton.addEventListener("click", this.start);
+    this.pauseButton.addEventListener("click", this.pause);
+    this.durationInput.addEventListener("focus", this.pause);
+    this.durationInput.addEventListener("change", this.onDurationChange);
   }
 
-  tick() {
-    this.currentTime -= 1;
-    const tickEvent = new CustomEvent('tick', {
-      detail: {
-        startTime: this.startTime,
-        currentTime: this.currentTime,
+  tick = () => {
+    if (this.timeRemaining <= 0) {
+      this.pause();
+      if (this.onComplete) {
+        this.onComplete();
       }
-    });
-    dispatchEvent(tickEvent);
-    console.log(tickEvent.detail);
+    } else {
+      if (this.onTick) {
+        this.onTick(this.timeRemaining);
+      }
+      this.timeRemaining = (this.timeRemaining - .01);
+    }
+  };
 
-  }
+  start = () => {
+    if (this.onStart) {
+      this.onStart(this.timeRemaining);
+    }
+    this.startButton.setAttribute("disabled", true);
+    this.tick();
+    this.intervalId = setInterval(this.tick, 10);
+  };
 
-  onDurationChange(newTime) {
-    this.pause();
-    this.startTime = newTime;
-    this.currentTime = newTime;
-    this.start();
-  }
-
-  start() {
-    this.intervalId = setInterval(() => {
-      this.tick()
-    }, 1000);
-  }
-
-  pause() {
+  pause = () => {
+    this.startButton.removeAttribute("disabled", true);
     clearInterval(this.intervalId);
+  };
+
+  get timeRemaining() {
+    return this.durationInput.value;
+  }
+
+  set timeRemaining(time) {
+    this.durationInput.value = time.toFixed(2);
   }
 }
-
-export default Timer;

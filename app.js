@@ -1,73 +1,23 @@
-class Timer {
-  constructor(durationInput, startButton, pauseButton, callbacks) {
-    // DOM element references bound to timer
-    this.startButton = startButton
-    this.pauseButton = pauseButton;
-    this.durationInput = durationInput;
-
-    if (callbacks) {
-      this.onStart = callbacks.onStart;
-      this.onTick = callbacks.onTick;
-      this.onComplete = callbacks.onComplete;
-    }
-
-    // Add event listeners to bound DOM elements
-    this.startButton.addEventListener('click', this.start);
-    this.pauseButton.addEventListener('click', this.pause);
-    this.durationInput.addEventListener('focus', this.pause);
-  };
-  
-  tick = () => {
-    if (this.timeRemaining <= 0) {
-      this.pause();
-      if (this.onComplete) {
-        this.onComplete();
-      }
-    } else {
-      if (this.onTick) {
-        this.onTick();
-      }
-      this.timeRemaining = this.timeRemaining - 1;
-    }
-  };
-
-  start = () => {
-    if (this.onStart) {
-      this.onStart();
-    }
-    this.startButton.setAttribute('disabled', true);
-    this.tick();
-    this.intervalId = setInterval(this.tick, 1000);
-  };
-
-  pause = () => {
-    this.startButton.removeAttribute('disabled', true);
-    clearInterval(this.intervalId);
-  };
-
-  get timeRemaining() {
-    return this.durationInput.value;
-  }
-
-  set timeRemaining(time) {
-    this.durationInput.value = time;
-  }
-}
-
 const startButton = document.getElementById('start')
 const pauseButton = document.getElementById('pause')
 const durationInput = document.getElementById('duration')
+const circle = document.querySelector('circle');
+const radius = circle.getAttribute('r');
+const perimeter = Math.PI * radius * 2;
+circle.setAttribute("stroke-dasharray", perimeter);
+let duration;
 const t = new Timer(durationInput, startButton, pauseButton, {
-  onStart() {
+  onStart(totalDuration) {
     console.log('Timer started')
+    duration = totalDuration;
   },
-  onTick() {
-    console.log('Tick')
+  onTick(timeRemaining) {
+    const offsetValue = perimeter * timeRemaining / duration - perimeter;
+    circle.setAttribute('stroke-dashoffset', offsetValue);
   },
   onComplete() {
-    console.log('Timer complete')
+    alert('Timer complete')
   },
   onDurationChange() {
-
   }
 });
