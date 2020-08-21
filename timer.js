@@ -37,13 +37,11 @@ class Timer {
     if (this.onStart) {
       this.onStart(this.timeRemaining);
     }
-    this.startButton.setAttribute("disabled", true);
     this.tick();
     this.intervalId = setInterval(this.tick, 10);
   };
 
   pause = () => {
-    this.startButton.removeAttribute("disabled", true);
     clearInterval(this.intervalId);
   };
 
