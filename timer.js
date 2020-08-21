@@ -9,14 +9,12 @@ class Timer {
       this.onStart = callbacks.onStart;
       this.onTick = callbacks.onTick;
       this.onComplete = callbacks.onComplete;
-      this.onDurationChange = callbacks.onDurationChange;
     }
 
     // Add event listeners to bound DOM elements
     this.startButton.addEventListener("click", this.start);
     this.pauseButton.addEventListener("click", this.pause);
     this.durationInput.addEventListener("focus", this.pause);
-    this.durationInput.addEventListener("change", this.onDurationChange);
   }
 
   tick = () => {

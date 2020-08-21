@@ -9,7 +9,7 @@ let duration;
 const t = new Timer(durationInput, startButton, pauseButton, {
   onStart(totalDuration) {
     console.log('Timer started')
-    duration = totalDuration;
+    duration |= totalDuration;
   },
   onTick(timeRemaining) {
     const offsetValue = perimeter * timeRemaining / duration - perimeter;
@@ -17,7 +17,5 @@ const t = new Timer(durationInput, startButton, pauseButton, {
   },
   onComplete() {
     alert('Timer complete')
-  },
-  onDurationChange() {
   }
 });
