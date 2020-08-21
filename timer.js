@@ -1,7 +1,7 @@
 class Timer {
   constructor(durationInput, startButton, pauseButton, callbacks) {
     // DOM element references bound to timer
-    this.startButton = startButton
+    this.startButton = startButton;
     this.pauseButton = pauseButton;
     this.durationInput = durationInput;
 
@@ -9,13 +9,15 @@ class Timer {
       this.onStart = callbacks.onStart;
       this.onTick = callbacks.onTick;
       this.onComplete = callbacks.onComplete;
+      this.onDurationChange = callbacks.onDurationChange;
     }
 
     // Add event listeners to bound DOM elements
-    this.startButton.addEventListener('click', this.start);
-    this.pauseButton.addEventListener('click', this.pause);
-    this.durationInput.addEventListener('focus', this.pause);
-  };
+    this.startButton.addEventListener("click", this.start);
+    this.pauseButton.addEventListener("click", this.pause);
+    this.durationInput.addEventListener("focus", this.pause);
+    this.durationInput.addEventListener("change", this.onDurationChange);
+  }
 
   tick = () => {
     if (this.timeRemaining <= 0) {
@@ -25,23 +27,23 @@ class Timer {
       }
     } else {
       if (this.onTick) {
-        this.onTick();
+        this.onTick(this.timeRemaining);
       }
-      this.timeRemaining = this.timeRemaining - 1;
+      this.timeRemaining = (this.timeRemaining - .01);
     }
   };
 
   start = () => {
     if (this.onStart) {
-      this.onStart();
+      this.onStart(this.timeRemaining);
     }
-    this.startButton.setAttribute('disabled', true);
+    this.startButton.setAttribute("disabled", true);
     this.tick();
-    this.intervalId = setInterval(this.tick, 1000);
+    this.intervalId = setInterval(this.tick, 10);
   };
 
   pause = () => {
-    this.startButton.removeAttribute('disabled', true);
+    this.startButton.removeAttribute("disabled", true);
     clearInterval(this.intervalId);
   };
 
@@ -50,6 +52,6 @@ class Timer {
   }
 
   set timeRemaining(time) {
-    this.durationInput.value = time;
+    this.durationInput.value = time.toFixed(2);
   }
 }
